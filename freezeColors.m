@@ -56,6 +56,7 @@ function freezeColors(varargin)
 %   JRI 4/12/07  Check for painters mode as Matlab doesn't support rgb in it.
 %   JRI 4/9/08   Fix preserving caxis for objects within hggroups (e.g. contourf)
 %   JRI 4/7/10   Change documentation for colorbars
+%   JRI 9/14/13  Fix for logical images. (v 2.4)
 
 % Hidden option for NaN colors:
 %   Missing data are often represented by NaN in the indexed color
@@ -70,7 +71,7 @@ function freezeColors(varargin)
 
 % Free for all uses, but please retain the following:
 %   Original Author:
-%   John Iversen, 2005-10
+%   John Iversen, 2005-13
 %   john_iversen@post.harvard.edu
 
 appdatacode = 'JRI__freezeColorsData';
@@ -121,7 +122,10 @@ for hh = cdatah',
         %       Thanks to O Yamashita for pointing this need out
         idx = ceil( (double(cdata) - cax(1)) / (cax(2)-cax(1)) * nColors);
     else %direct mapping
-        idx = cdata;
+        idx = cdata; 
+        if islogical(idx), %matlab seems to map logicals onto first two entries of colormap (9/13)
+          idx = double(idx)+1;
+        end
         %10/8/09 in case direct data is non-int (e.g. image;freezeColors)
         % (Floor mimics how matlab converts data into colormap index.)
         % Thanks to D Armyr for the catch
@@ -183,7 +187,7 @@ function hout = getCDataHandles(h)
 %   such a group's CData automatically changes the CData of its children, 
 %   (as well as the children's handles), so there's no need to act on them.
 
-error(nargchk(1,1,nargin,'struct'))
+narginchk(1,1)
 
 hout = [];
 if isempty(h),return;end
@@ -193,7 +197,7 @@ for hh = ch'
     g = get(hh);
     if isfield(g,'CData'),     %does object have CData?
         %is it indexed/scaled?
-        if ~isempty(g.CData) && isnumeric(g.CData) && size(g.CData,3)==1, 
+        if ~isempty(g.CData) && (isnumeric(g.CData) || islogical(g.CData)) && size(g.CData,3)==1, 
             hout = [hout; hh]; %#ok<AGROW> %yes, add to list
         end
     else %no CData, see if object has any interesting children
@@ -207,7 +211,7 @@ end
 function hAx = getParentAxes(h)
 % getParentAxes  Return enclosing axes of a given object (could be self)
 
-error(nargchk(1,1,nargin,'struct'))
+narginchk(1,1)
 %object itself may be an axis
 if strcmp(get(h,'type'),'axes'),
     hAx = h;
@@ -229,10 +233,10 @@ end
 function [h, nancolor] = checkArgs(args)
 % checkArgs  Validate input arguments to freezeColors
 
-nargs = length(args);
-error(nargchk(0,3,nargs,'struct'))
+narginchk(0,3)
 
 %grab handle from first argument if we have an odd number of arguments
+nargs = length(args);
 if mod(nargs,2),
     h = args{1};
     if ~ishandle(h),
