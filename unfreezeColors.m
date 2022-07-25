@@ -65,36 +65,44 @@ for h1 = h', %loop on axes
         if ishandle(hh)
             if isappdata(hh,appdatacode),
                 ad = getappdata(hh,appdatacode);
-                %get oroginal cdata
-                %patches have to be handled separately (see note in freezeColors)
-                if ~strcmp(get(hh,'type'),'patch'),
-                    cdata = get(hh,'CData');
-                else
-                    cdata = get(hh,'faceVertexCData');
-                    cdata = permute(cdata,[1 3 2]);
-                end
-                indexed = ad{1};
-                scalemode = ad{2};
                 
-                %size consistency check
-                if all(size(indexed) == size(cdata(:,:,1))),
-                    %ok, restore indexed cdata
+                %special case for new matlab colorbars
+                if strcmp(get(hh,'Type'),'colorbar')
+                    rmappdata(hh, appdatacode)
+                    
+                else %usual CData - type objects
+                    
+                    %get oroginal cdata
+                    %patches have to be handled separately (see note in freezeColors)
                     if ~strcmp(get(hh,'type'),'patch'),
-                        set(hh,'CData',indexed);
+                        cdata = get(hh,'CData');
                     else
-                        set(hh,'faceVertexCData',indexed);
+                        cdata = get(hh,'faceVertexCData');
+                        cdata = permute(cdata,[1 3 2]);
                     end
-                    %restore cdatamapping, if needed
-                    g = get(hh);
-                    if isfield(g,'CDataMapping'),
-                        set(hh,'CDataMapping',scalemode);
-                    end
-                    %clear appdata
-                    rmappdata(hh,appdatacode)
-                else
-                    warning('JRI:unfreezeColors:internalCdataInconsistency',...
-                        ['Could not restore indexed data: it is the wrong size. ' ...
-                        'Were the axis contents changed since the call to freezeColors?'])
+                    indexed = ad{1};
+                    scalemode = ad{2};
+                    
+                    %size consistency check
+                    %if all(size(indexed) == size(cdata(:,:,1))),
+                        %ok, restore indexed cdata
+                        if ~strcmp(get(hh,'type'),'patch'),
+                            set(hh,'CData',indexed);
+                        else
+                            set(hh,'faceVertexCData',indexed);
+                        end
+                        %restore cdatamapping, if needed
+                        g = get(hh);
+                        if isfield(g,'CDataMapping'),
+                            set(hh,'CDataMapping',scalemode);
+                        end
+                        %clear appdata
+                        rmappdata(hh,appdatacode)
+%                     else
+%                         warning('JRI:unfreezeColors:internalCdataInconsistency',...
+%                             ['Could not restore indexed data: it is the wrong size. ' ...
+%                             'Were the axis contents changed since the call to freezeColors?'])
+%                     end
                 end
                 
             end %test if has our appdata
