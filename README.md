@@ -1,5 +1,7 @@
 # freezeColors/unfreezeColors
 
+[![View freezeColors / unfreezeColors on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/7943-freezecolors-unfreezecolors)
+
 freezeColors allows multiple colormaps to be used per figure and even within a single axis.
 
 ![icon](demo/html/freezeColors_pub_icon.png)
