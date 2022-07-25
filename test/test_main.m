@@ -120,14 +120,14 @@ disp(' =Hit a key='), pause, disp(' ')
 
 clf
 
-subplot(3,2,1); imagesc(peaks); axis xy; colormap hsv; title('imagesc, hsv');
+subplot(3,2,1); imagesc(peaks); axis xy; colormap hot; title('imagesc, hot');
 freezeColors; freezeColors(colorbar)
 
 subplot(3,2,2); surf(peaks); shading interp; colormap jet; title('surf, jet');
 freezeColors; freezeColors(colorbar)
 
 subplot(3,2,3); scatter(abs(randn(100,1)),randn(100,1),rand(100,1)*100,rand(100,1),'filled');
-title('scatter, cool AND hot'),colormap hot; axis(3*[-1 1 -1 1]);
+title('scatter, cool AND hot in one axis'),colormap hot; axis(3*[-1 1 -1 1]);
 hold on
 freezeColors; freezeColors(jicolorbar('wide'))
 scatter(-abs(randn(100,1)),randn(100,1),rand(100,1)*100,rand(100,1),'filled');
@@ -140,6 +140,7 @@ subplot(3,2,4); contourf(peaks);title('contourf, copper')
 colormap copper;
 title('contourf, copper')
 freezeColors(colorbar)
+
     
 %demonstrate handling of NaNs -- ordinarily these are preserved, but there's a hidden
 %   option to subsitute another color for NaN
@@ -156,6 +157,22 @@ view(-46,65); %so grid shows through
 set(gca,'color',[0 1 0])
 grid on, box off
 freezeColors('nancolor',[0 0 1]); %test two argument form
+unfreezeFig = gcf;
+
+figure
+[x,y] = peaks(30); z =(x.^2)-(y.^2);
+ribbon(z); colormap parula; freezeColors; freezeColors(jicolorbar)
+hold on
+surf(peaks); shading interp; caxis auto; colormap gray; freezeColors; freezeColors(colorbar); view([-32 37])
+title('freezeColors: two colormaps in an axis')
+
+
+figure
+surf(peaks); colormap parula; freezeColors; freezeColors(jicolorbar); hold on
+surf(peaks+20); caxis([14 28]); colormap gray; freezeColors; freezeColors(colorbar);
+surf(peaks+40); caxis(caxis+20); colormap hot; freezeColors; freezeColors(jicolorbar('horiz'));
+axis auto; shading interp; caxis([14 28]); view([-27 14]); set(gca,'color',[.8 .8 .8])
+title('freezeColors: enable multiple colormaps per axis')
 
 % ============================================================================ %
 
@@ -169,7 +186,8 @@ disp(' ')
 disp(' =Hit a key='), pause, disp(' ')
 
 colormap gray
-unfreezeColors(gcf)
+figure(unfreezeFig)
+unfreezeColors(unfreezeFig)
 
 
 disp('>> colormap gray')

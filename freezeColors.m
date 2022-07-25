@@ -27,8 +27,23 @@ function freezeColors(varargin)
 %                                   colormap
 %
 %   Example:
-%       subplot(2,1,1); imagesc(X); colormap hot; freezeColors; freezeColors(colorbar)
-%       subplot(2,1,2); imagesc(Y); colormap hsv; freezeColors etc...
+%       subplot(2,1,1); imagesc(peaks); colormap hot; freezeColors; freezeColors(colorbar)
+%       subplot(2,1,2); imagesc(peaks); colormap hsv; freezeColors; freezeColors(colorbar) etc...
+%
+%     in such a simple case, this could just as well use matlab's per-axis colormaps (2014 and later):
+%       subplot(2,1,1); imagesc(peaks); colorbar; colormap(gca,'hot')
+%       subplot(2,1,2); imagesc(peaks); colorbar; colormap(gca,'hsv')
+%
+%     but if you wanted multiple colormaps within a single axis, you'll still need freezeColors:
+%
+%       figure
+%       surf(peaks); colormap parula; freezeColors; freezeColors(jicolorbar); hold on
+%       surf(peaks+20); caxis([14 28]); colormap gray; freezeColors; freezeColors(colorbar);
+%       surf(peaks+40); caxis(caxis+20); colormap hot; freezeColors; freezeColors(jicolorbar('horiz'));
+%       axis auto; shading interp; caxis([14 28]); view([-27 14]); set(gca,'color',[.8 .8 .8])
+%
+%
+%
 %
 %       For additional examples, see test/test_main.m
 %
