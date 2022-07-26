@@ -1,5 +1,5 @@
 function unfreezeColors(h)
-% unfreezeColors  Restore colors of a plot to original indexed color. (v2.3)
+% unfreezeColors  Restore colors of a plot to original indexed color. (v2.5)
 %
 %   Useful if you want to apply a new colormap to plots whose
 %       colors were previously frozen with freezeColors.
@@ -10,25 +10,23 @@ function unfreezeColors(h)
 %       unfreezeColors(figh)    same, but for all objects in figure figh.
 %
 %       Has no effect on objects on which freezeColors was not already called.
-%				(Note: if colorbars were frozen using cbfreeze, use cbfreeze('off') to 
-%       unfreeze them. See freezeColors for information on cbfreeze.)
 %
-%
-%   See also freezeColors, freezeColors_pub.html, cbfreeze.
+%   See also freezeColors.
 %
 %
 %   John Iversen (iversen@nsi.edu) 3/23/05
 %
-
+%
 %   Changes:
 %   JRI 9/1/06 now restores any object with frozen CData;
 %              can unfreeze an entire figure at once.
 %   JRI 4/7/10 Change documentation for colorbars
-
+%   JRI 7/22   Updated for new colorbars
+%
 % Free for all uses, but please retain the following:
 %
 %   Original Author:
-%   John Iversen, 2005-10
+%   John Iversen, 2005-22
 %   john_iversen@post.harvard.edu
 
 error(nargchk(0,1,nargin,'struct'))
